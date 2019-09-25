@@ -9,6 +9,9 @@ var spotify = new Spotify(keys.spotify);
 // require spotify 
 // require all the other databases 
 
+// Use axios to grab data from OMDB API and the Bands in Town API 
+
+
 // Liri app should accept commands like :
 
 // `concert-this`
