@@ -1,0 +1,20 @@
+{
+  "name": "liri-node-app",
+  "version": "1.0.0",
+  "description": "A node app to search for songs on Spotify, bands on Bands in Town, and movies on OMDB",
+  "main": "liri-app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deyagenao/liri-node-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deyagenao/liri-node-app/issues"
+  },
+  "homepage": "https://github.com/deyagenao/liri-node-app#readme"
+}
