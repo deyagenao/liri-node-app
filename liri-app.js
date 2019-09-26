@@ -1,21 +1,80 @@
+////////////////////////////////////////////////////////////
+// GLOBAL VARIABLES 
+
+// read and set all environment variables with the dotenv package 
 require("dotenv").config();
 
+// require the keys.js file, which is kept private
 var keys = require("./keys.js");
 
+// Require the fs package to read and write
+var fs = require("fs");
+
+// require Axios node package 
+var axios = require("axios");
+
+// require the Spotify node package and access the appropriate keys  
+var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
 
-// require axios 
+// set command line variables 
+var searchCommand = process.argv[2];
+var searchQuery = process.argv[3];
 
-// require spotify 
-// require all the other databases 
+// Switch function to determine which search will run, based on the 
+switch(searchCommand){
+    case "concert-this":
+        searchBandsInTown();
+        break;
+
+    case "spotify-this-song":
+        searchSpotify();
+        break;
+
+    case "movie-this":
+        searchOMDB();
+        break;
+    
+    case "do-what-it-says":
+        searchRandomFile();
+        break;
+
+    default:
+        console.log("LIRI cannot compute.")
+};
+
+
 
 // Use axios to grab data from OMDB API and the Bands in Town API 
 
 
-// Liri app should accept commands like :
+/////////////////////////////////////////////////////////
+// LIRI App Command Functions 
 
-// `concert-this`
-// 1. `node liri.js concert-this <artist/band name here>`
+// function connected to the `concert-this`command 
+// `node liri.js concert-this <artist/band name here>`
+function searchBandsInTown(){
+    console.log("Hey");
+    // check to see if the user input the name of an artist or band 
+    if (searchQuery){
+        // if the user did insert an actual search query, then run the axios request to the Bands in Town api
+        axios.get("https://rest.bandsintown.com/artists/" + searchQuery + "/events?app_id=codingbootcamp")
+        .then(function(response){
+            console.log(response);
+        });
+    }else{
+        axios.get("https://rest.bandsintown.com/artists/rihanna/events?app_id=codingbootcamp")
+        .then(function(response){
+            console.log(response);
+            // * Name of the venue
+
+            // * Venue location
+
+            // * Date of the Event (use moment to format this as "MM/DD/YYYY")
+        });
+    }
+}
+
 
 // * This will search the Bands in Town Artist Events API (`"https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"`) for an artist and render the following information about each event to the terminal:
 
@@ -42,21 +101,29 @@ var spotify = new Spotify(keys.spotify);
 
 //    * You will utilize the [node-spotify-api](https://www.npmjs.com/package/node-spotify-api) package in order to retrieve song information from the Spotify API.
 
-//    * The Spotify API requires you sign up as a developer to generate the necessary credentials. You can follow these steps in order to generate a **client id** and **client secret**:
-
-//    * Step One: Visit <https://developer.spotify.com/my-applications/#!/>
-
-//    * Step Two: Either login to your existing Spotify account or create a new one (a free account is fine) and log in.
-
-//    * Step Three: Once logged in, navigate to <https://developer.spotify.com/my-applications/#!/applications/create> to register a new application to be used with the Spotify API. You can fill in whatever you'd like for these fields. When finished, click the "complete" button.
-
-//    * Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the [node-spotify-api package](https://www.npmjs.com/package/node-spotify-api).
-
 
 //  `movie-this`
+// `node liri.js movie-this '<movie name here>'
+function searchOMDB(){
+    console.log("woo!");
+    if (searchQuery){
+        axios.get("http://www.omdbapi.com/?t=" + searchQuery + "&apikey=trilogy").then(function(response){
+            console.log(response);
+        });
 
-// 3. `node liri.js movie-this '<movie name here>'`
+    }else{
+        axios.get("http://www.omdbapi.com/?t=Mr.+Nobody&apikey=trilogy").then(function(response){
+            console.log(response);
+        });
+    };
+}
 
+// axios.get("http://www.omdbapi.com/?t=remember+the+titans&y=&plot=short&apikey=trilogy").then(
+//   function(response) {
+//     // Then we print out the imdbRating
+//     console.log("The movie's rating is: " + response.data.imdbRating);
+//   }
+// );
 //    * This will output the following information to your terminal/bash window:
 
 //      ```
@@ -87,3 +154,5 @@ var spotify = new Spotify(keys.spotify);
 //      * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
 
 //      * Edit the text in random.txt to test out the feature for movie-this and concert-this.
+
+
