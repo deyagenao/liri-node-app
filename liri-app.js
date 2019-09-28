@@ -13,13 +13,16 @@ var fs = require("fs");
 // require Axios node package 
 var axios = require("axios");
 
+//require moment package 
+var moment = require("moment");
+
 // require the Spotify node package and access the appropriate keys  
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
 
 // set command line variables 
 var searchCommand = process.argv[2];
-var searchQuery = process.argv[3];
+var searchQuery = process.argv.slice(3).join("+");
 
 // Switch function to determine which search will run, based on the 
 switch(searchCommand){
@@ -61,16 +64,36 @@ function searchBandsInTown(){
         axios.get("https://rest.bandsintown.com/artists/" + searchQuery + "/events?app_id=codingbootcamp")
         .then(function(response){
             console.log(response);
+            for (var i=0; i < response.data.length; i++){
+                var eventDate = moment(response.data[i].datetime, "YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY");
+                console.log(
+                    // * Name of the venue
+                    // * Venue location
+                    // * Date of the Event
+                    "\nName of Venue: " + response.data[i].venue.name+
+                    "\nVenue location: " + response.data[i].venue.city+ ", " + response.data[i].venue.country+ 
+                    "\nEvent Date: " +eventDate+ 
+                    "\n--------------------------------------------------------------"
+                )
+            }
         });
     }else{
-        axios.get("https://rest.bandsintown.com/artists/rihanna/events?app_id=codingbootcamp")
+        axios.get("https://rest.bandsintown.com/artists/cardi+b/events?app_id=codingbootcamp")
         .then(function(response){
             console.log(response);
-            // * Name of the venue
-
-            // * Venue location
-
-            // * Date of the Event (use moment to format this as "MM/DD/YYYY")
+            console.log("Showing event results for Cardi B: ") 
+            for (var i=0; i < response.data.length; i++){
+                var eventDate = moment(response.data[i].datetime, "YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY");
+                console.log(
+                    // * Name of the venue
+                    // * Venue location
+                    // * Date of the Event
+                    "\nName of Venue: " + response.data[i].venue.name+
+                    "\nVenue location: " + response.data[i].venue.city+ ", " + response.data[i].venue.country+ 
+                    "\nEvent Date: " +eventDate+ 
+                    "\n--------------------------------------------------------------"
+                )
+            }
         });
     }
 }
@@ -108,47 +131,68 @@ function searchOMDB(){
     console.log("woo!");
     if (searchQuery){
         axios.get("http://www.omdbapi.com/?t=" + searchQuery + "&apikey=trilogy").then(function(response){
-            console.log(response);
+            // console.log(response.data);
+            console.log("Title: " + response.data.Title + 
+            "\nYear: " + response.data.Year+ 
+            "\nIMDB Rating: " + response.data.Ratings[0].Value+
+            "\nRotten Tomatoes Rating: " +response.data.Ratings[1].Value+
+            "\nCountry: " +response.data.Country +
+            "\nLanguage: " + response.data.Language +
+            "\nPlot: " + response.data.Plot + 
+            "\nActors: " + response.data.Actors);
         });
 
     }else{
         axios.get("http://www.omdbapi.com/?t=Mr.+Nobody&apikey=trilogy").then(function(response){
-            console.log(response);
+            // console.log(response.data);
+            console.log("Title: " + response.data.Title + 
+            "\nYear: " + response.data.Year+ 
+            "\nIMDB Rating: " + response.data.Ratings[0].Value+
+            "\nRotten Tomatoes Rating: " +response.data.Ratings[1].Value+
+            "\nCountry: " +response.data.Country +
+            "\nLanguage: " + response.data.Language +
+            "\nPlot: " + response.data.Plot + 
+            "\nActors: " + response.data.Actors);
         });
     };
 }
 
-// axios.get("http://www.omdbapi.com/?t=remember+the+titans&y=&plot=short&apikey=trilogy").then(
-//   function(response) {
-//     // Then we print out the imdbRating
-//     console.log("The movie's rating is: " + response.data.imdbRating);
-//   }
-// );
-//    * This will output the following information to your terminal/bash window:
-
-//      ```
-//        * Title of the movie.
-//        * Year the movie came out.
-//        * IMDB Rating of the movie.
-//        * Rotten Tomatoes Rating of the movie.
-//        * Country where the movie was produced.
-//        * Language of the movie.
-//        * Plot of the movie.
-//        * Actors in the movie.
-//      ```
-
-//    * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-
-//      * If you haven't watched "Mr. Nobody," then you should: <http://www.imdb.com/title/tt0485947/>
-
-//      * It's on Netflix!
-
-//    * You'll use the `axios` package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use `trilogy`.
-
 //  `do-what-it-says`
-
 // 4. `node liri.js do-what-it-says`
+function searchRandomFile() {
+    fs.readFile("random.txt", "utf8", function(error, data) {
+        if (error) {
+            return console.log(error)
+        }
+        // testing to log the data
+        console.log(data);
+        
+        // create an array from the data to separate the command from the actual search 
+        var dataArray = data.split(",");
 
+        console.log(dataArray);
+
+        searchCommand = dataArray[0];
+        searchQuery = dataArray[1];
+        
+        if (searchCommand === "movie-this"){
+            if (searchQuery){
+                axios.get("http://www.omdbapi.com/?t=" + searchQuery + "&apikey=trilogy").then(function(response){
+                    // console.log(response.data);
+                    console.log("Title: " + response.data.Title + 
+                    "\nYear: " + response.data.Year+ 
+                    "\nIMDB Rating: " + response.data.Ratings[0].Value+
+                    "\nRotten Tomatoes Rating: " +response.data.Ratings[1].Value+
+                    "\nCountry: " +response.data.Country +
+                    "\nLanguage: " + response.data.Language +
+                    "\nPlot: " + response.data.Plot + 
+                    "\nActors: " + response.data.Actors);
+                });
+            };
+        }
+
+    });
+}
 //    * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
 
 //      * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
