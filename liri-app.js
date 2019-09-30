@@ -46,15 +46,14 @@ switch(searchCommand){
         break;
 
     default:
-        console.log("LIRI cannot compute.")
+        console.log("\n--------------------------------------------------------\n\nWelcome to LIRI (Language Interpretation and Recognition Interface). To get started, please enter one of the following prompts: \n\nSearch for your favorite artist or band's upcoming tour events: concert-this \n\nSearch for information about your favorite song: spotify-this-song \n\nSearch for movies: movie-this \n\nNot sure what to look for? Just: do-what-it-says\n\n------------------------------------------------\n")
 };
 
 
 
-// Use axios to grab data from OMDB API and the Bands in Town API 
 
 
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 // LIRI App Command Functions 
 
 // function connected to the `concert-this`command 
@@ -105,6 +104,8 @@ function searchBandsInTown(){
     }
 }
 
+
+
 // NEW COMMAND: `spotify-this-song`
 // `node liri.js spotify-this-song '<song name here>'`
 function searchSpotify() {
@@ -113,7 +114,7 @@ function searchSpotify() {
             if (err){
                 return console.log("An error occurred: " + err);
             }
-            console.log("Here are your Spotify search results for " + searchQueryForPrint+ ":")
+            console.log("\n\n-------------------------------------------------------\n\nShowing your Spotify search results for " + searchQueryForPrint+ ":")
             for (var i = 0; i < response.tracks.items.length; i++){
                 var artistArray = [];
                 for (var j=0; j<response.tracks.items[i].artists.length; j++){
@@ -138,7 +139,7 @@ function searchSpotify() {
             var artistName = response.tracks.items[5].artists[0].name; 
             var songLink = response.tracks.items[5].external_urls.spotify;
             var album = response.tracks.items[5].album.name;
-
+            console.log("\n\n-------------------------------------------------------\n\nShowing your Spotify search results for 'The Sign' by Ace of Base");
             console.log('Song name: "'+songName+ '" \nArtist(s): ' + artistName +
             '\nAlbum: ' + album + '\nLink to the song on Spotify: ' + songLink+
             '\n\n-----------------------------------------------------------\n');
@@ -147,13 +148,13 @@ function searchSpotify() {
 }
 
 
+
 //  NEW COMMAND: `movie-this`
 // `node liri.js movie-this '<movie name here>'
 function searchOMDB(){
-    console.log("woo!");
     if (searchQuery){
         axios.get("http://www.omdbapi.com/?t=" + searchQuery + "&apikey=trilogy").then(function(response){
-            // console.log(response.data);
+            console.log("\n\n-------------------------------------------------------\n\nShowing your OMDB search results for " +searchQueryForPrint+ ": \n\n");
             console.log("Title: " + response.data.Title + 
             "\nYear: " + response.data.Year+ 
             "\nIMDB Rating: " + response.data.Ratings[0].Value+
@@ -161,12 +162,12 @@ function searchOMDB(){
             "\nCountry: " +response.data.Country +
             "\nLanguage: " + response.data.Language +
             "\nPlot: " + response.data.Plot + 
-            "\nActors: " + response.data.Actors);
+            "\nActors: " + response.data.Actors+
+            "\n\n-------------------------------------------------------\n\n");
         });
-
     }else{
         axios.get("http://www.omdbapi.com/?t=Mr.+Nobody&apikey=trilogy").then(function(response){
-            // console.log(response.data);
+            console.log("\n\n-------------------------------------------------------\n\nShowing your OMDB search results for Mr. Nobody: \n\n");
             console.log("Title: " + response.data.Title + 
             "\nYear: " + response.data.Year+ 
             "\nIMDB Rating: " + response.data.Ratings[0].Value+
@@ -174,10 +175,13 @@ function searchOMDB(){
             "\nCountry: " +response.data.Country +
             "\nLanguage: " + response.data.Language +
             "\nPlot: " + response.data.Plot + 
-            "\nActors: " + response.data.Actors);
+            "\nActors: " + response.data.Actors +
+            "\n\n-------------------------------------------------------\n\n");
         });
     };
 }
+
+
 
 // NEW COMMAND `do-what-it-says`
 // `node liri.js do-what-it-says`
@@ -187,37 +191,27 @@ function searchRandomFile() {
             return console.log(error)
         }
         // testing to log the data
-        console.log(data);
+        // console.log(data);
         
         // create an array from the data read from the random file to separate the command from the actual search 
         var dataArray = data.split(",");
 
-        console.log(dataArray);
+        // console.log(dataArray);
 
         searchCommand = dataArray[0];
         searchQuery = dataArray[1];
+        searchQueryForPrint = dataArray[1];
         
         if (searchCommand === "movie-this"){
-            if (searchQuery){
-                axios.get("http://www.omdbapi.com/?t=" + searchQuery + "&apikey=trilogy").then(function(response){
-                    console.log("Title: " + response.data.Title + 
-                    "\nYear: " + response.data.Year+ 
-                    "\nIMDB Rating: " + response.data.Ratings[0].Value+
-                    "\nRotten Tomatoes Rating: " +response.data.Ratings[1].Value+
-                    "\nCountry: " +response.data.Country +
-                    "\nLanguage: " + response.data.Language +
-                    "\nPlot: " + response.data.Plot + 
-                    "\nActors: " + response.data.Actors);
-                });
-            };
+            searchOMDB();
+        }else if (searchCommand === "spotify-this-song"){
+            searchSpotify();
+        }else if (searchCommand === "concert-this"){
+            searchBandsInTown();
+        }else{
+            console.log("\n--------------------------------------------------------\n\nWelcome to LIRI (Language Interpretation and Recognition Interface). To get started, please enter one of the following prompts: \n\nSearch for your favorite artist or band's upcoming tour events: concert-this \n\nSearch for information about your favorite song: spotify-this-song \n\nSearch for movies: movie-this \n\nNot sure what to look for? Just: do-what-it-says\n\n------------------------------------------------\n");
         }
-
     });
 }
-//    * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
-
-//      * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
-
-//      * Edit the text in random.txt to test out the feature for movie-this and concert-this.
 
 
