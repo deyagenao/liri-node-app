@@ -105,7 +105,7 @@ function searchBandsInTown(){
     }
 }
 
-// `spotify-this-song`
+// NEW COMMAND: `spotify-this-song`
 // `node liri.js spotify-this-song '<song name here>'`
 function searchSpotify() {
     if (searchQuery){
@@ -113,7 +113,21 @@ function searchSpotify() {
             if (err){
                 return console.log("An error occurred: " + err);
             }
-            console.log(JSON.stringify(response));
+            console.log("Here are your Spotify search results for " + searchQueryForPrint+ ":")
+            for (var i = 0; i < response.tracks.items.length; i++){
+                var artistArray = [];
+                for (var j=0; j<response.tracks.items[i].artists.length; j++){
+                    artistArray.push(response.tracks.items[i].artists[j].name);
+                }
+                var songName = response.tracks.items[i].name;
+                var artistsNames =  artistArray.join(", ");
+                var songLink = response.tracks.items[i].external_urls.spotify;
+                var album = response.tracks.items[i].album.name;
+
+                console.log('Song name: "'+songName+ '" \nArtist(s): ' + artistsNames +
+                '\nAlbum: ' + album + '\nLink to the song on Spotify: ' + songLink+
+                '\n\n-----------------------------------------------------------\n')
+            }
         })
     }else{
         spotify.search({type: 'track', query: 'The Sign'}, function (err, response) {
@@ -126,7 +140,8 @@ function searchSpotify() {
             var album = response.tracks.items[5].album.name;
 
             console.log('Song name: "'+songName+ '" \nArtist(s): ' + artistName +
-            '\nAlbum: ' + album + '\nLink to the song on Spotify: ' + songLink);
+            '\nAlbum: ' + album + '\nLink to the song on Spotify: ' + songLink+
+            '\n\n-----------------------------------------------------------\n');
         })
     }
 }
